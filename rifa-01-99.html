@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Rifa 01-99</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --accent: #22c55e;
+      --accent-soft: rgba(34, 197, 94, 0.12);
+      --reserved: #eab308;
+      --reserved-soft: rgba(234, 179, 8, 0.18);
+      --sold: #ef4444;
+      --sold-soft: rgba(239, 68, 68, 0.18);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --border: #1f2933;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #111827 0, #020617 55%, #000 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 24px 12px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1100px;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.98));
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      box-shadow:
+        0 24px 60px rgba(15, 23, 42, 0.85),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+      padding: 20px 20px 22px;
+      backdrop-filter: blur(18px);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    @media (min-width: 900px) {
+      .app {
+        padding: 24px 26px 26px;
+        gap: 20px;
+      }
+
+      .app-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.8fr) minmax(260px, 0.9fr);
+        gap: 18px;
+        align-items: flex-start;
+      }
+    }
+
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.4rem;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h1 span.badge {
+      font-size: 0.7rem;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .subtitle {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.76rem;
+    }
+
+    .pill {
+      padding: 3px 8px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: radial-gradient(circle at top, rgba(148, 163, 184, 0.12), transparent 60%);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot.available {
+      background: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .dot.reserved {
+      background: var(--reserved);
+      box-shadow: 0 0 0 3px var(--reserved-soft);
+    }
+
+    .dot.sold {
+      background: var(--sold);
+      box-shadow: 0 0 0 3px var(--sold-soft);
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    button.btn {
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: radial-gradient(circle at top left, rgba(148, 163, 184, 0.22), rgba(15, 23, 42, 0.95));
+      color: var(--text);
+      font-size: 0.78rem;
+      padding: 6px 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, border-color 0.08s ease, background 0.12s ease;
+      white-space: nowrap;
+    }
+
+    button.btn span.icon {
+      font-size: 0.9rem;
+    }
+
+    button.btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(148, 163, 184, 0.7);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.8);
+      background: radial-gradient(circle at top left, rgba(148, 163, 184, 0.32), rgba(15, 23, 42, 0.98));
+    }
+
+    button.btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.9);
+    }
+
+    button.btn-secondary {
+      background: rgba(15, 23, 42, 0.9);
+      border-color: rgba(51, 65, 85, 0.85);
+    }
+
+    button.btn-secondary:hover {
+      background: rgba(15, 23, 42, 0.98);
+    }
+
+    .card {
+      border-radius: 14px;
+      background: radial-gradient(circle at top left, rgba(148, 163, 184, 0.12), rgba(15, 23, 42, 0.92));
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      padding: 14px 14px 16px;
+    }
+
+    .grid-title {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .grid-title strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .numbers-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    @media (min-width: 600px) {
+      .numbers-grid {
+        grid-template-columns: repeat(10, minmax(0, 1fr));
+      }
+    }
+
+    .number-btn {
+      border-radius: 10px;
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      background: rgba(15, 23, 42, 0.92);
+      color: var(--muted);
+      font-size: 0.86rem;
+      padding: 9px 4px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, border-color 0.08s ease, background 0.12s ease, color 0.12s ease;
+      position: relative;
+      overflow: hidden;
+      font-variant-numeric: tabular-nums;
+      user-select: none;
+    }
+
+    .number-btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      background: radial-gradient(circle at top, rgba(248, 250, 252, 0.25), transparent 60%);
+      transition: opacity 0.12s ease;
+      pointer-events: none;
+    }
+
+    .number-btn:hover::after {
+      opacity: 1;
+    }
+
+    .number-btn.available {
+      border-color: rgba(34, 197, 94, 0.75);
+      background: radial-gradient(circle at top, rgba(34, 197, 94, 0.16), rgba(15, 23, 42, 0.98));
+      color: #bbf7d0;
+      box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.6);
+    }
+
+    .number-btn.reserved {
+      border-color: rgba(234, 179, 8, 0.8);
+      background: radial-gradient(circle at top, rgba(234, 179, 8, 0.22), rgba(15, 23, 42, 0.96));
+      color: #fef3c7;
+      box-shadow: 0 0 0 1px rgba(234, 179, 8, 0.7);
+    }
+
+    .number-btn.sold {
+      border-color: rgba(239, 68, 68, 0.85);
+      background: radial-gradient(circle at top, rgba(239, 68, 68, 0.22), rgba(15, 23, 42, 0.98));
+      color: #fee2e2;
+      box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.8);
+    }
+
+    .number-btn small {
+      display: block;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 2px;
+      opacity: 0.72;
+    }
+
+    .side-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .side-panel h2 {
+      margin: 0 0 4px;
+      font-size: 0.9rem;
+    }
+
+    .mini-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 0.76rem;
+    }
+
+    .chip {
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      background: rgba(15, 23, 42, 0.95);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .chip.reserved {
+      border-color: rgba(234, 179, 8, 0.7);
+      background: rgba(234, 179, 8, 0.12);
+    }
+
+    .chip.sold {
+      border-color: rgba(239, 68, 68, 0.8);
+      background: rgba(239, 68, 68, 0.14);
+    }
+
+    .muted-msg {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .footer {
+      font-size: 0.74rem;
+      color: var(--muted);
+      border-top: 1px solid rgba(31, 41, 55, 0.95);
+      padding-top: 7px;
+      margin-top: 2px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .footer span {
+      opacity: 0.9;
+    }
+
+    .footer strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <div class="title-block">
+        <h1>
+          Rifa 01-99
+          <span class="badge">100 números</span>
+        </h1>
+        <p class="subtitle">
+          Haz clic sobre cada número para cambiar su estado:
+          Disponible ? Reservado ? Vendido ? Disponible.
+        </p>
+      </div>
+
+      <div class="legend">
+        <span class="pill">
+          <span class="dot available"></span>
+          Disponible
+        </span>
+        <span class="pill">
+          <span class="dot reserved"></span>
+          Reservado
+        </span>
+        <span class="pill">
+          <span class="dot sold"></span>
+          Vendido
+        </span>
+      </div>
+
+      <div class="controls">
+        <button class="btn btn-secondary" id="resetStates">
+          <span class="icon">??</span> Reiniciar estados
+        </button>
+        <button class="btn" id="exportStates">
+          <span class="icon">??</span> Copiar estados
+        </button>
+      </div>
+    </header>
+
+    <div class="app-layout">
+      <section class="card">
+        <div class="grid-title">
+          <span><strong>Números</strong> 01-99</span>
+          <span style="font-size:0.74rem; color:var(--muted);">
+            Estados guardados en este navegador
+          </span>
+        </div>
+        <div class="numbers-grid" id="numbersGrid"></div>
+      </section>
+
+      <aside class="side-panel">
+        <section class="card">
+          <h2>Resumen</h2>
+          <p class="mini-label">Totales</p>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; font-size:0.8rem;">
+            <div class="pill">
+              Disponibles: <strong id="countAvailable">0</strong>
+            </div>
+            <div class="pill">
+              Reservados: <strong id="countReserved">0</strong>
+            </div>
+            <div class="pill">
+              Vendidos: <strong id="countSold">0</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <p class="mini-label">Reservados</p>
+          <div id="reservedList" class="chips"></div>
+          <p id="noReservedMsg" class="muted-msg">No hay números reservados.</p>
+        </section>
+
+        <section class="card">
+          <p class="mini-label">Vendidos</p>
+          <div id="soldList" class="chips"></div>
+          <p id="noSoldMsg" class="muted-msg">No hay números vendidos.</p>
+        </section>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      <span>Estados guardados localmente con <code>localStorage</code>.</span>
+      <span>Hecho para rifas de <strong>01-99</strong>.</span>
+    </footer>
+  </main>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = "rifa_01_99_estados";
+
+      const states = {
+        AVAILABLE: "available",
+        RESERVED: "reserved",
+        SOLD: "sold",
+      };
+
+      function loadStates() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return {};
+          const parsed = JSON.parse(raw);
+          return parsed && typeof parsed === "object" ? parsed : {};
+        } catch (e) {
+          console.error("Error leyendo localStorage:", e);
+          return {};
+        }
+      }
+
+      function saveStates(map) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(map));
+        } catch (e) {
+          console.error("Error guardando en localStorage:", e);
+        }
+      }
+
+      function nextState(current) {
+        if (!current || current === states.AVAILABLE) return states.RESERVED;
+        if (current === states.RESERVED) return states.SOLD;
+        if (current === states.SOLD) return states.AVAILABLE;
+        return states.AVAILABLE;
+      }
+
+      const gridEl = document.getElementById("numbersGrid");
+      const countAvailableEl = document.getElementById("countAvailable");
+      const countReservedEl = document.getElementById("countReserved");
+      const countSoldEl = document.getElementById("countSold");
+      const reservedListEl = document.getElementById("reservedList");
+      const soldListEl = document.getElementById("soldList");
+      const noReservedMsgEl = document.getElementById("noReservedMsg");
+      const noSoldMsgEl = document.getElementById("noSoldMsg");
+      const resetBtn = document.getElementById("resetStates");
+      const exportBtn = document.getElementById("exportStates");
+
+      let stateMap = loadStates();
+
+      function formatNumber(n) {
+        return n.toString().padStart(2, "0");
+      }
+
+      function render() {
+        const buttons = gridEl.querySelectorAll(".number-btn");
+        let availableCount = 0;
+        let reservedCount = 0;
+        let soldCount = 0;
+        const reservedNums = [];
+        const soldNums = [];
+
+        buttons.forEach((btn) => {
+          const num = btn.dataset.num;
+          const st = stateMap[num] || states.AVAILABLE;
+
+          btn.classList.remove(states.AVAILABLE, states.RESERVED, states.SOLD);
+          btn.classList.add(st);
+
+          let label = "Disponible";
+          if (st === states.RESERVED) label = "Reservado";
+          if (st === states.SOLD) label = "Vendido";
+          btn.querySelector("small").textContent = label;
+
+          if (st === states.AVAILABLE) availableCount++;
+          if (st === states.RESERVED) {
+            reservedCount++;
+            reservedNums.push(num);
+          }
+          if (st === states.SOLD) {
+            soldCount++;
+            soldNums.push(num);
+          }
+        });
+
+        countAvailableEl.textContent = availableCount;
+        countReservedEl.textContent = reservedCount;
+        countSoldEl.textContent = soldCount;
+
+        reservedListEl.innerHTML = "";
+        soldListEl.innerHTML = "";
+
+        if (reservedNums.length > 0) {
+          noReservedMsgEl.style.display = "none";
+          reservedNums
+            .sort()
+            .forEach((num) => {
+              const chip = document.createElement("span");
+              chip.className = "chip reserved";
+              chip.textContent = num;
+              reservedListEl.appendChild(chip);
+            });
+        } else {
+          noReservedMsgEl.style.display = "block";
+        }
+
+        if (soldNums.length > 0) {
+          noSoldMsgEl.style.display = "none";
+          soldNums
+            .sort()
+            .forEach((num) => {
+              const chip = document.createElement("span");
+              chip.className = "chip sold";
+              chip.textContent = num;
+              soldListEl.appendChild(chip);
+            });
+        } else {
+          noSoldMsgEl.style.display = "block";
+        }
+      }
+
+      function buildGrid() {
+        const fragment = document.createDocumentFragment();
+        for (let i = 1; i <= 99; i++) {
+          const num = formatNumber(i);
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "number-btn";
+          btn.dataset.num = num;
+          btn.innerHTML = `
+            <span>${num}</span>
+            <small></small>
+          `;
+          btn.addEventListener("click", () => {
+            const current = stateMap[num] || states.AVAILABLE;
+            const next = nextState(current);
+            stateMap[num] = next;
+            saveStates(stateMap);
+            render();
+          });
+          fragment.appendChild(btn);
+        }
+        gridEl.appendChild(fragment);
+      }
+
+      resetBtn.addEventListener("click", () => {
+        if (!confirm("¿Seguro que quieres reiniciar todos los estados?")) return;
+        stateMap = {};
+        saveStates(stateMap);
+        render();
+      });
+
+      exportBtn.addEventListener("click", () => {
+        const lines = ["Número,Estado"];
+        for (let i = 1; i <= 99; i++) {
+          const num = formatNumber(i);
+          const st = stateMap[num] || states.AVAILABLE;
+          let label = "Disponible";
+          if (st === states.RESERVED) label = "Reservado";
+          if (st === states.SOLD) label = "Vendido";
+          lines.push(`${num},${label}`);
+        }
+        const text = lines.join("\n");
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            alert("Estados copiados al portapapeles en formato CSV.\nPuedes pegarlos en Excel.");
+          })
+          .catch(() => {
+            alert("No se pudo copiar automáticamente. Selecciona y copia manualmente.");
+            console.log(text);
+          });
+      });
+
+      buildGrid();
+      render();
+    })();
+  </script>
+</body>
+</html>
