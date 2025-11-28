@@ -361,10 +361,10 @@
       <div class="title-block">
         <h1>
           Rifa 01-99
-          <span class="badge">100 números</span>
+          <span class="badge">100 nÃºmeros</span>
         </h1>
         <p class="subtitle">
-          Haz clic sobre cada número para cambiar su estado:
+          Haz clic sobre cada nÃºmero para cambiar su estado:
           Disponible ? Reservado ? Vendido ? Disponible.
         </p>
       </div>
@@ -397,7 +397,7 @@
     <div class="app-layout">
       <section class="card">
         <div class="grid-title">
-          <span><strong>Números</strong> 01-99</span>
+          <span><strong>NÃºmeros</strong> 01-99</span>
           <span style="font-size:0.74rem; color:var(--muted);">
             Estados guardados en este navegador
           </span>
@@ -425,13 +425,13 @@
         <section class="card">
           <p class="mini-label">Reservados</p>
           <div id="reservedList" class="chips"></div>
-          <p id="noReservedMsg" class="muted-msg">No hay números reservados.</p>
+          <p id="noReservedMsg" class="muted-msg">No hay nÃºmeros reservados.</p>
         </section>
 
         <section class="card">
           <p class="mini-label">Vendidos</p>
           <div id="soldList" class="chips"></div>
-          <p id="noSoldMsg" class="muted-msg">No hay números vendidos.</p>
+          <p id="noSoldMsg" class="muted-msg">No hay nÃºmeros vendidos.</p>
         </section>
       </aside>
     </div>
@@ -588,14 +588,14 @@
       }
 
       resetBtn.addEventListener("click", () => {
-        if (!confirm("¿Seguro que quieres reiniciar todos los estados?")) return;
+        if (!confirm("Â¿Seguro que quieres reiniciar todos los estados?")) return;
         stateMap = {};
         saveStates(stateMap);
         render();
       });
 
       exportBtn.addEventListener("click", () => {
-        const lines = ["Número,Estado"];
+        const lines = ["NÃºmero,Estado"];
         for (let i = 1; i <= 99; i++) {
           const num = formatNumber(i);
           const st = stateMap[num] || states.AVAILABLE;
@@ -611,7 +611,7 @@
             alert("Estados copiados al portapapeles en formato CSV.\nPuedes pegarlos en Excel.");
           })
           .catch(() => {
-            alert("No se pudo copiar automáticamente. Selecciona y copia manualmente.");
+            alert("No se pudo copiar automÃ¡ticamente. Selecciona y copia manualmente.");
             console.log(text);
           });
       });
@@ -622,3 +622,4 @@
   </script>
 </body>
 </html>
+
